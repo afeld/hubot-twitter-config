@@ -1,0 +1,10 @@
+{
+  "name": "hubot-twitter-config",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "lib/hubot-twitter-config.coffee",
+  "dependencies": {
+    "coffee-script": "~1.6.3",
+    "ntwitter": "~0.5.0"
+  }
+}
