@@ -9,10 +9,12 @@
   },
   "devDependencies": {
     "expect.js": "~0.2.0",
-    "mocha": "~1.13.0"
+    "mocha": "~1.13.0",
+    "grunt": "~0.4.2",
+    "grunt-mocha-test": "~0.8.1"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script test/**/*",
+    "test": "grunt",
     "watch": "mocha --compilers coffee:coffee-script test/**/* --watch"
   }
 }
