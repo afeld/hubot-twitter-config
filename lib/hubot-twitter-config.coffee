@@ -18,34 +18,38 @@
 
 ntwitter = require 'ntwitter'
 util = require "util"
-twitterConfig = require("./twitter-config")(process.env)
+preConfig = require("./twitter-config")
 
-module.exports = (robot) ->
-  credentials = twitterConfig.defaultCredentials()
 
-  if not credentials
-    robot.logger.warning "[twitter] Missing Twitter configuration, disabling twitter support : HUBOT_TWITTER_CONSUMER_KEY, HUBOT_TWITTER_CONSUMER_SECRET, HUBOT_TWITTER_ACCESS_TOKEN_KEY_<USERNAME>, and HUBOT_TWITTER_ACCES_TOKEN_SECRET_<USERNAME> are required."
-  else
+module.exports = (env) ->
+  credentials = preConfig(env).defaultCredentials()
+  if credentials
     credentials.rest_base = 'https://api.twitter.com/1.1'
-    robot.twitterAuth = credentials
-    robot.twitter = new ntwitter credentials
-    robot.twitter.verifyCredentials (err, data) ->
-      if err
-        robot.logger.warning "[twitter] Error verifying credentials, disabling twitter support: #{util.inspect err}"
-        robot.twitter = undefined
-      else
-        robot.logger.info "[twitter] connected as #{data.screen_name}"
 
-  robot.respondWithTwitterUsersRandomStatus = (regex, screen_name) ->
-    robot.respond regex, (msg) ->
-      unless robot.twitter
-        msg.send "Couldn't connect to twitter :("
-        return
+  createNTwitter = (robot) ->
+    if credentials
+      new ntwitter(credentials)
+    else
+      robot.logger.warning("[twitter] Missing Twitter configuration, disabling twitter support : HUBOT_TWITTER_CONSUMER_KEY, HUBOT_TWITTER_CONSUMER_SECRET, HUBOT_TWITTER_ACCESS_TOKEN_KEY_<USERNAME>, and HUBOT_TWITTER_ACCES_TOKEN_SECRET_<USERNAME> are required.")
+      null
 
-      robot.twitter.getUserTimeline {screen_name: screen_name}, (err, data) ->
-        if err
-          msg.send "Encountered a problem getting #{screen_name}'s timeline", util.inspect(err)
+  {
+    ntwitter: (robot) ->
+      createNTwitter(robot)
+
+    respondWithTwitterUsersRandomStatus: (robot, regex, screen_name) ->
+      twitter = null
+      robot.respond regex, (msg) ->
+        twitter ||= createNTwitter(robot)
+        unless twitter
+          msg.send "Couldn't connect to twitter :("
           return
 
-        status = msg.random data
-        msg.send "http://twitter.com/#!/#{status.user.screen_name}/status/#{status.id_str}"
+        twitter.getUserTimeline {screen_name: screen_name}, (err, data) ->
+          if err
+            msg.send "Encountered a problem getting #{screen_name}'s timeline", util.inspect(err)
+            return
+
+          status = msg.random data
+          msg.send "http://twitter.com/#!/#{status.user.screen_name}/status/#{status.id_str}"
+  }
