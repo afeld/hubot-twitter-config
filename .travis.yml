@@ -1,0 +1,6 @@
+# match https://github.com/github/hubot/blob/master/.travis.yml
+language: node_js
+node_js:
+  - "0.11"
+  - "0.10"
+  - "0.8"
