@@ -3,9 +3,9 @@ preConfig = require "../lib/twitter-config"
 
 describe "twitter-config", ->
   describe ".defaultCredentials()", ->
-    it "throws an error without any variables specified", ->
+    it "doesn't throw an error without any variables specified", ->
       config = preConfig({})
-      expect(config.defaultCredentials).to.throwException()
+      expect(config.defaultCredentials).not.to.throwException()
 
     it "uses the non-username-specific credentials if specified", ->
       config = preConfig({
