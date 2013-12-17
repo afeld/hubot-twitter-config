@@ -22,7 +22,8 @@ preConfig = require("./twitter-config")
 
 
 module.exports = (env) ->
-  credentials = preConfig(env).defaultCredentials()
+  twitterConfig = preConfig(env)
+  credentials = twitterConfig.defaultCredentials()
   if credentials
     credentials.rest_base = 'https://api.twitter.com/1.1'
 
@@ -34,6 +35,11 @@ module.exports = (env) ->
       null
 
   {
+    credentialsFor: (username) ->
+      twitterConfig.credentialsFor(username)
+
+    defaultCredentials: credentials
+
     ntwitter: (robot) ->
       createNTwitter(robot)
 
