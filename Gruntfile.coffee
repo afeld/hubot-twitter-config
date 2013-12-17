@@ -1,4 +1,5 @@
 module.exports = (grunt) ->
+  grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-mocha-test')
 
   # Project configuration.
@@ -9,6 +10,9 @@ module.exports = (grunt) ->
         options:
           reporter: 'spec'
         src: ['test/**/*.js', 'test/**/*.coffee']
+    watch:
+      files: ['lib/**/*', 'test/**/*']
+      tasks: ['mochaTest']
   )
 
   # Default task(s).
